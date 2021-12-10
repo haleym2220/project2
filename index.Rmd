@@ -70,7 +70,7 @@ ggplot()+geom_line(aes(x=1:10,y=sil_width))+scale_x_continuous(name="k",breaks=1
 
 
 VA_pam <-VA%>%pam(k=2)
-plot(drug_pam, which=2)
+plot(VA_pam, which=2)
 VA%>%slice(VA_pam$id.med)
 
 library(GGally)
@@ -114,6 +114,10 @@ summary(fit)
 score <- predict(fit, type="response")
 score %>% round(3)
 class_diag(score,truth=VA$status, positive=1)
+```
+
+```{R}
+prob<- predict(fit, type = "response")
 table(predict=as.numeric(prob>.5), truth=VA$status) %>% addmargins 
 
 library(pROC)
@@ -143,7 +147,8 @@ summarize_all(diags, mean)
 ### Non-Parametric Classifier
 
 ```{R}
-fit <- knn3(status ~ ., data = VA1)
+library(caret)
+fit <- knn3(status ~., data = VA1)
 summary(fit)
 prob <- predict(fit, newdata = VA1)[, 2]
 class_diag(prob, VA1$status, positive = 1)
