@@ -46,92 +46,170 @@ class_diag <- function(score, truth, positive, cutoff=.5){
 
 # Mining, Classification, Prediction
 
-## Name and EID here
+## Haley Harnitchek hmh2475
 
 ### Introduction 
 
-Paragraph or two introducing your datasets and variables, why they are interesting to you, etc. See instructions for more information
+*I chose this data set because it contains data from the Veteran’s Administration Lung Cancer Trial (Kalbfleisch and Prentice). I thought it was interesting because it shows if treatment helped patients. The data are described here. Treatment denotes the type of lung cancer treatment; 1 (standard) and 2 (test drug). CellType denotes the type of cell involved; 1 (squamous), 2 (small cell), 3 (adeno), 4 (large). Survival is the survival time in days since the treatment. Status denotes the status of the patient as dead or alive; 1 (dead), 0 (alive). Karnofsky is the Karnofsky score. Diag is the time since diagnosis in months. Age is the age in years. Therapy denotes any prior therapy; 0 (none), 10 (yes). There are 8 variables and 137 observations for each. There are 1096 observations in total.* 
 
 ```{R}
 library(tidyverse)
-# read your datasets in here, e.g., with read_csv()
-
-# if your dataset needs tidying, do so here
-
-# any other code here
+VA <- MASS::VA
 ```
 
 ### Cluster Analysis
 
 ```{R}
 library(cluster)
-# clustering code here
+pam_dat<-VA%>%select(stime,age,Karn,diag.time)
+sil_width<-vector()
+for(i in 2:10){  
+  pam_fit <- pam(pam_dat, k = i)  
+  sil_width[i] <- pam_fit$silinfo$avg.width}
+ggplot()+geom_line(aes(x=1:10,y=sil_width))+scale_x_continuous(name="k",breaks=1:10)
+
+
+VA_pam <-VA%>%pam(k=2)
+plot(drug_pam, which=2)
+VA%>%slice(VA_pam$id.med)
+
+library(GGally)
+VA %>% mutate(cluster=as.factor(VA_pam$clustering)) %>% ggpairs(columns = c("stime","age","Karn","diag.time"), aes(color=cluster))
 ```
 
-Discussion of clustering here
+*I used PAM clustering. Based on the four numeric variables, a 2 cluster solution might be best because the largest average silhoutte width was 0.7 at 2 clusters. A reasonable structure was found because the average silhouette width was 0.7. Using these clusters, I visualized all of the pairwise combinations of the four numeric variables (stime, age, Karn, diag.time). The pairwaise combinations showed that there waws little to no correlation between the four numeric variables. There does seem to be a small positive correlation between stime (survival or follow-up time in days) and Karn (patient performance on a scale of 0 to 100).* 
     
     
 ### Dimensionality Reduction with PCA
 
 ```{R}
-# PCA code here
+VA1 <-  VA %>% select(stime,age,Karn,diag.time)
+VA_nums <-  VA1 %>% select_if(is.numeric) %>% na.omit %>% scale
+rownames(VA_nums) <-  VA1$Name 
+VA_pca <-  princomp(VA_nums)
+names(VA_pca)
+
+summary(VA_pca, loadings=T)
+
+eigval<-VA_pca$sdev^2
+round(cumsum(eigval)/sum(eigval), 2)
+eigval
 ```
 
-Discussions of PCA here. 
+```{R}
+library(factoextra)
+fviz_pca_biplot(VA_pca)
+```
+
+*The PCA describes my data by analyzing the variables with the most variation to helps us better understand underlying trends. After standardizing my data and converting my standard deviations to eigen values, I graphed the proportion of variation explained by each principle component. I kept PC1 and PC2 because both of them are above 1. This PCA biplot shows both PC scores of samples (dots) and vectors. The further away these vectors are from a PC origin, the more influence they have on that PC. Stime and Karn have the most influence on the PC1. Age has the negative influence on both PCs while diag.time has a positive influence on PC2.*
 
 ###  Linear Classifier
 
 ```{R}
-# linear classifier code here
+fit <- lm(status~stime+age+Karn+diag.time, data=VA, family="binomial")
+summary(fit)
 ```
 
 ```{R}
-# cross-validation of linear classifier here
+score <- predict(fit, type="response")
+score %>% round(3)
+class_diag(score,truth=VA$status, positive=1)
+table(predict=as.numeric(prob>.5), truth=VA$status) %>% addmargins 
+
+library(pROC)
+ROCplot<-plot.roc(VA$status~prob)
 ```
 
-Discussion here
+```{R}
+VA1 <- VA %>% select(status,stime,age,diag.time,Karn)
+set.seed(1234)
+k = 10
+data <- VA1[sample(nrow(VA1)), ]
+folds <- cut(seq(1:nrow(VA1)), breaks = k, labels = F)
+diags <- NULL
+for (i in 1:k) {
+    train <- data[folds != i, ]
+    test <- data[folds == i, ]
+    truth <- test$status
+    fit <- glm(status ~ ., data = train, family = "binomial")
+    probs <- predict(fit, newdata = test, type = "response")
+    diags <- rbind(diags, class_diag(probs, truth, positive = 1))
+}
+summarize_all(diags, mean)
+```
+
+*A linear classifier was used to try and predict the status of a patient (dead = 1, alive = 0) from their age, their Karnofsky score, time since diagnosis in months, and survival or follow-up time in days. The confusion matrix shows that the number of true positives that the model predicted was not that high, while the number of true negatives was very high. This is solidified by the ROC curve because it vaguely resembles a 75 degree angle. The AUC is the same as calculated by the ‘class_diags’ function which is a fair AUC of 0.7127.The accuracy of my model is fair and the sensitivity is poor, while the specificity, precision, and AUC are all pretty good. I also used a 10-fold cross validation to further evaluate how this model would be generalized to new data. The accuracy and AUC slightly decreased after cross validation, which is not an indication of overfitting of the linear model.*
 
 ### Non-Parametric Classifier
 
 ```{R}
-library(caret)
-# non-parametric classifier code here
+fit <- knn3(status ~ ., data = VA1)
+summary(fit)
+prob <- predict(fit, newdata = VA1)[, 2]
+class_diag(prob, VA1$status, positive = 1)
 ```
 
 ```{R}
-# cross-validation of np classifier here
+table(truth = VA1$status, prediction = (prob > 0.5)) %>% addmargins
+library(pROC)
+ROCplot <- plot.roc(VA1$status ~ prob)
+
+cv <- trainControl(method = "cv", number = 10, classProbs = T, 
+    savePredictions = T)
+fit <- train(status ~ ., data = VA1, trControl = cv, 
+    method = "knn")
+class_diag(fit$pred$pred, fit$pred$obs, positive = 1)
 ```
 
-Discussion
+*k-Nearest neighbor classification was fit to the same numeric variables to attempt to see a difference in the prediction of the status of a patient suffering from lung cancer with a non-parametric classifier. The AUC was 0.9245, which shows that the in-sample performance is great at predicting the survival rate of the patients within this non-linear boundary. Additionally, this is apparent in the ROC curve that closely resembles a right angle due to a high sensitivity and low false positive rate. The non-parametric sensitivity is higher than the that of the linear regression model. The cross-validation indicates that the k-Nearest neighbor model was trained too tightly to the dataset because the accuracy and AUC dropped from 0.9245 to 0.607 respectively. An AUC of 0.607 signifies a poor performance in cross validation when predicting the status of the patients and that overfitting is present.*
 
 
 ### Regression/Numeric Prediction
 
 ```{R}
-# regression model code here
+fit<-lm(diag.time~stime+Karn,data=VA1)
+yhat<-predict(fit)
+mean((VA1$diag.time-yhat)^2)
 ```
 
 ```{R}
-# cross-validation of regression model here
+library(rpart); library(rpart.plot)
+set.seed(1234)
+k=5 #choose number of folds
+data<-VA1[sample(nrow(VA1)),] #randomly order rows
+folds<-cut(seq(1:nrow(VA1)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){
+  train<-data[folds!=i,]
+  test<-data[folds==i,]
+  ## Fit linear regression model to training set
+  fit<-lm(diag.time~.,data=train)
+  ## Get predictions/y-hats on test set (fold i)
+  yhat<-predict(fit,newdata=test)
+  ## Compute prediction error  (MSE) for fold i
+  diags<-mean((test$diag.time-yhat)^2) 
+}
+mean(diags)
 ```
 
-Discussion
+*A linear regression model was used to predict the diagnosis time from the Karnofzky score and follow-up time of each patient. Unfortunately, MSE (mean square error) was 107.949, which shows that a large amount of error was present in the model.Ironically, the cross validation revealed a much lower MSE of 40.01053, which shows that if this model is used on a new data set, overfitting would not be present. Sadly, this regression model is a poor predictor of diagnosis time for the patients, which can be due to the severity of each patient's cancer upon entry to trial.*
 
 ### Python 
 
+```{python}
+
+```
+
 ```{R}
 library(reticulate)
+#py$VA
 ```
 
 ```{python}
-# python code here
+
 ```
 
 Discussion
-
-### Concluding Remarks
-
-Include concluding remarks here, if any
 
 
 
