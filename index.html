@@ -1537,8 +1537,9 @@ div.tocify {
 <h2>Haley Harnitchek hmh2475</h2>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
-<p><em>I chose this data set because it contains data from the Veteran’s Administration Lung Cancer Trial (Kalbfleisch and Prentice). I thought it was interesting because it shows if treatment helped patients. The data are described here. Treatment denotes the type of lung cancer treatment; 1 (standard) and 2 (test drug). CellType denotes the type of cell involved; 1 (squamous), 2 (small cell), 3 (adeno), 4 (large). Survival is the survival time in days since the treatment. Status denotes the status of the patient as dead or alive; 1 (dead), 0 (alive). Karnofsky is the Karnofsky score. Diag is the time since diagnosis in months. Age is the age in years. Therapy denotes any prior therapy; 0 (none), 10 (yes). There are 8 variables and 137 observations for each. There are 1096 observations in total.</em></p>
-<pre class="r"><code>library(tidyverse)
+<p><em>I chose this data set because it contains data from the Veteran’s Administration Lung Cancer Trial (Kalbfleisch and Prentice). I thought it was interesting because it shows if treatment helped patients. The data are described here. Treatment denotes the type of lung cancer treatment; 1 (standard) and 2 (test drug). Cell Type denotes the type of cell involved; 1 (squamous), 2 (small cell), 3 (adeno), 4 (large). Survival is the survival time in days since the treatment. Status denotes the status of the patient as dead or alive; 1 (dead), 0 (alive). Karnofsky is the Karnofsky score. Diag is the time since diagnosis in months. Age is the age in years. Therapy denotes any prior therapy; 0 (none), 10 (yes). There are 8 variables and 137 observations for each. There are 1096 observations in total.</em></p>
+<pre class="r"><code>library(dplyr)
+library(ggplot2)
 VA &lt;- MASS::VA</code></pre>
 </div>
 <div id="cluster-analysis" class="section level3">
@@ -1739,8 +1740,82 @@ mean(diags)</code></pre>
 <div id="python" class="section level3">
 <h3>Python</h3>
 <pre class="r"><code>library(reticulate)
-# py$VA</code></pre>
-<p>Discussion</p>
+use_python(&quot;/usr/bin/python3&quot;)</code></pre>
+<pre class="python"><code>VA =r.VA</code></pre>
+<pre class="r"><code>library(reticulate)
+py$VA</code></pre>
+<pre><code>## $stime
+##   [1]  72 411 228 126 118  10  82 110 314 100  42   8 144  25  11  30 384   4
+##  [19]  54  13 123  97 153  59 117  16 151  22  56  21  18 139  20  31  52 287
+##  [37]  18  51 122  27  54   7  63 392  10   8  92  35 117 132  12 162   3  95
+##  [55] 177 162 216 553 278  12 260 200 156 182 143 105 103 250 100 999 112  87
+##  [73] 231 242 991 111   1 587 389  33  25 357 467 201   1  30  44 283  15  25
+##  [91] 103  21  13  87   2  20   7  24  99   8
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]
+## 
+## $status
+##   [1] 1 1 1 1 1 1 1 1 1 0 1 1 1 0 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+##  [38] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 0 1
+##  [75] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 1
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]
+## 
+## $treat
+##   [1] &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot;
+##  [19] &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot;
+##  [37] &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot;
+##  [55] &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot;
+##  [73] &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot;
+##  [91] &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot;
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]
+## 
+## $age
+##   [1] 69 64 38 63 65 49 69 68 43 70 81 63 63 52 48 61 42 35 63 56 55 67 63 65 46
+##  [26] 53 69 68 43 55 42 64 65 65 55 66 60 67 53 62 67 72 48 68 67 61 60 62 38 50
+##  [51] 63 64 43 34 66 62 52 47 63 68 45 41 66 62 60 66 38 53 37 54 60 48 52 70 50
+##  [76] 62 65 58 62 64 63 58 64 52 35 63 70 51 40 69 36 71 62 60 44 54 66 49 72 68
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]
+## 
+## $Karn
+##   [1] 60 70 60 60 70 20 40 80 50 70 60 40 30 80 70 60 60 40 80 60 40 60 60 30 80
+##  [26] 30 50 60 80 40 20 80 30 75 70 60 30 60 80 60 70 50 50 40 40 20 70 40 80 80
+##  [51] 50 80 30 80 50 80 50 70 60 40 80 80 70 90 90 80 80 70 60 90 80 80 50 50 70
+##  [76] 70 20 60 90 30 20 70 90 80 50 70 60 90 50 30 70 20 30 60 40 30 20 60 70 80
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]
+## 
+## $diag.time
+##   [1]  7  5  3  9 11  5 10 29 18  6  4 58  4  9 11  3  9  2  4  4  3  5 14  2  3
+##  [26]  4 12  4 12  2 15  2  5  3  2 25  4  1 28  8  1  7 11  4 23 19 10  6  2  5
+##  [51]  4  5  3  4 16  5 15  2 12 12  5 12  2  2  8 11  5  8 13 12  6  3  8  1  7
+##  [76]  3 21  3  2  6 36 13  2 28  7 11 13  2 13  2 22  4  2  2 36  9 11  8  3  2
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]
+## 
+## $cell
+##   [1] &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot;
+##  [19] &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot;
+##  [37] &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;3&quot; &quot;3&quot; &quot;3&quot; &quot;3&quot; &quot;3&quot; &quot;3&quot; &quot;3&quot; &quot;3&quot; &quot;3&quot;
+##  [55] &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot;
+##  [73] &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;1&quot; &quot;2&quot;
+##  [91] &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot; &quot;2&quot;
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]
+## 
+## $prior
+##   [1] &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;10&quot; &quot;10&quot; &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;10&quot; &quot;10&quot;
+##  [16] &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;10&quot;
+##  [31] &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot;
+##  [46] &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot;
+##  [61] &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;10&quot; &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;10&quot;
+##  [76] &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;0&quot;  &quot;10&quot; &quot;0&quot; 
+##  [91] &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;10&quot; &quot;10&quot; &quot;0&quot;  &quot;0&quot;  &quot;0&quot;  &quot;0&quot; 
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 37 entries ]</code></pre>
+<pre class="r"><code>min(py$VA$stime)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>min(py$VA$age)</code></pre>
+<pre><code>## [1] 34</code></pre>
+<pre class="r"><code>max(py$VA$stime)</code></pre>
+<pre><code>## [1] 999</code></pre>
+<pre class="r"><code>max(py$VA$age)</code></pre>
+<pre><code>## [1] 81</code></pre>
+<p><em>Unfortunately, I was unable to make this data set a py file due to it no being a data frame. Due to this, I accessed this dataset through python with “r.” By using min and max functions in r, I selected two of the numeric variables age and stime to determine if there were any outliers present in the data. It is apparent that at least one outlier was present in the data as one patient had a total of 999 follow-up days. The minimum amount of days spent survivng or in follow-up was 1 day. The youngest person in this study was 34 and the oldest was 81. This is really intersting because although this can all be done in R without python. This shows thaht Python and R can communicate.</em></p>
 </div>
 </div>
 </div>
